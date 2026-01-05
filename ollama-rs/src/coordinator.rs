@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use schemars::Schema;
 
 use crate::{
     generation::{
@@ -59,6 +60,19 @@ impl<C: ChatHistory> Coordinator<C> {
     pub fn add_tool<T: Tool + 'static>(mut self, tool: T) -> Self {
         self.tool_infos.push(ToolInfo::new::<_, T>());
         self.tools.insert(T::name().to_string(), Box::new(tool));
+        self
+    }
+
+    pub fn add_tool_custom(mut self, name: &str, description: &str, tool: Box<dyn ToolHolder>) -> Self {
+        self.tool_infos.push(ToolInfo {
+            tool_type: crate::generation::tools::ToolType::Function,
+            function: crate::generation::tools::ToolFunctionInfo {
+                name: name.to_string(),
+                description: description.to_string(),
+                parameters: Schema::default(),
+            },
+        });
+        self.tools.insert(name.to_string(), tool);
         self
     }
 
