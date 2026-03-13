@@ -75,6 +75,19 @@ impl<C: ChatHistory> Coordinator<C> {
         self.tools.insert(name.to_string(), tool);
         self
     }
+
+    pub fn add_tool_custom_schema(mut self, name: &str, description: &str, parameters: Schema, tool: Box<dyn ToolHolder>) -> Self {
+        self.tool_infos.push(ToolInfo {
+            tool_type: crate::generation::tools::ToolType::Function,
+            function: crate::generation::tools::ToolFunctionInfo {
+                name: name.to_string(),
+                description: description.to_string(),
+                parameters,
+            },
+        });
+        self.tools.insert(name.to_string(), tool);
+        self
+    }
     
     pub fn format(mut self, format: FormatType) -> Self {
         self.format = Some(format);
